@@ -13,6 +13,7 @@ exports.authController = void 0;
 const Role_1 = require("../dbModels/Role");
 const User_1 = require("../dbModels/User");
 const express_validator_1 = require("express-validator");
+const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 exports.authController = {
     registration(req, res) {
@@ -42,6 +43,15 @@ exports.authController = {
     login(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                const { username, password } = req.body;
+                const user = yield User_1.UserModel.findOne({ username });
+                if (!user)
+                    return res.status(400).json({ message: `Username ${username} does not exist` });
+                const validPassword = bcrypt.compareSync(password, user.password);
+                if (!validPassword)
+                    return res.status(400).json({ message: `Login or password is wrong` });
+                const token = this.generateAccessToken(user._id, user.roles);
+                return res.json({ token });
             }
             catch (e) {
                 console.log(e);
@@ -53,11 +63,6 @@ exports.authController = {
     getUsers(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                // // Создаем две роли. Обычный юзер и админ. Костыль т.к. мы не выносим это в отдельный файл здесь
-                // const userRole = new RoleModel()
-                // const adminRole = new RoleModel({value: "ADMIN"})
-                // await userRole.save()
-                // await adminRole.save()
                 res.json("Our server works");
             }
             catch (e) {
@@ -65,6 +70,15 @@ exports.authController = {
                 res.sendStatus(400)
                     .json({ message: 'Get users error occurred' });
             }
+        });
+    },
+    generateAccessToken(id, roles) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const payload = {
+                id,
+                roles
+            };
+            return jwt.sign(payload, process.env.JWT_KEY, { expiresIn: '24h' });
         });
     }
 };
