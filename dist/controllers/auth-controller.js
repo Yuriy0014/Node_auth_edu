@@ -12,11 +12,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.authController = void 0;
 const Role_1 = require("../dbModels/Role");
 const User_1 = require("../dbModels/User");
+const express_validator_1 = require("express-validator");
 const bcrypt = require('bcryptjs');
 exports.authController = {
     registration(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                const errors = (0, express_validator_1.validationResult)(req);
+                if (!errors.isEmpty())
+                    return res.status(400).json({ message: 'Ошибка при регистрации ', errors });
                 const { username, password } = req.body;
                 const candidate = yield User_1.UserModel.findOne({ username });
                 if (candidate)
