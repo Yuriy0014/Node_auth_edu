@@ -8,11 +8,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+Object.defineProperty(exports, "__esModule", { value: true });
+const auth_router_1 = require("./routes/auth-router");
 const express = require('express');
 const mongoose = require('mongoose');
 const app = express();
 const port = process.env.PORT || 3000;
 app.use(express.json());
+app.use('/auth', auth_router_1.authRouter);
 const start = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         yield mongoose.connect('mongodb+srv://ylogachev2019:qwerty123@cluster0.jb9egoo.mongodb.net/?retryWrites=true&w=majority');
