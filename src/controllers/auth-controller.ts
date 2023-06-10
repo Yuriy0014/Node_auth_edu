@@ -48,8 +48,11 @@ export const authController = {
         }
     },
     async getUsers(req: Request, res: Response) {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) return res.status(400).json({message: 'Ошибка при регистрации ', errors})
         try {
-            res.json("Our server works")
+            const users = await UserModel.find()
+            res.json(users)
         } catch (e) {
             console.log(e)
             res.sendStatus(400)

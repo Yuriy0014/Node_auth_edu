@@ -62,8 +62,12 @@ exports.authController = {
     },
     getUsers(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
+            const errors = (0, express_validator_1.validationResult)(req);
+            if (!errors.isEmpty())
+                return res.status(400).json({ message: 'Ошибка при регистрации ', errors });
             try {
-                res.json("Our server works");
+                const users = yield User_1.UserModel.find();
+                res.json(users);
             }
             catch (e) {
                 console.log(e);
