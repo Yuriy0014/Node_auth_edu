@@ -48,6 +48,7 @@ exports.authController = {
                 if (!user)
                     return res.status(400).json({ message: `Username ${username} does not exist` });
                 const validPassword = bcrypt.compareSync(password, user.password);
+                console.log(validPassword);
                 if (!validPassword)
                     return res.status(400).json({ message: `Login or password is wrong` });
                 const token = this.generateAccessToken(user._id, user.roles);
@@ -55,8 +56,7 @@ exports.authController = {
             }
             catch (e) {
                 console.log(e);
-                res.sendStatus(400)
-                    .json({ message: 'Login error occurred' });
+                res.sendStatus(400).json({ message: 'Login error occurred' });
             }
         });
     },
@@ -73,12 +73,10 @@ exports.authController = {
         });
     },
     generateAccessToken(id, roles) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const payload = {
-                id,
-                roles
-            };
-            return jwt.sign(payload, process.env.JWT_KEY, { expiresIn: '24h' });
-        });
+        const payload = {
+            id,
+            roles
+        };
+        return jwt.sign(payload, process.env.JWT_KEY, { expiresIn: '24h' });
     }
 };
